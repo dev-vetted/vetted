@@ -3,10 +3,20 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.user.upsert({
-    where: { email: 'demo@vetted.dev' },
-    create: { email: 'demo@vetted.dev', name: 'Demo User' },
-    update: {},
+  const tenant = await prisma.tenant.create({
+    data: { type: 'vendor', name: 'Demo Tenant' },
+  });
+
+  const user = await prisma.user.create({
+    data: { email: 'demo@vetted.dev' },
+  });
+
+  await prisma.membership.create({
+    data: { userId: user.id, tenantId: tenant.id, role: 'owner' },
+  });
+
+  await prisma.pet.create({
+    data: { tenantId: tenant.id, name: 'Buddy', species: 'dog' },
   });
 }
 

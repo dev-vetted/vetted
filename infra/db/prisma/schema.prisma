@@ -4,14 +4,43 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:wRUAyvaKrKKk3Tpd@db.lctnuaejhzgsdidtynmc.supabase.co:5432/postgres"
+}
+
+model Tenant {
+  id        String       @id @default(cuid())
+  type      String
+  name      String
+  createdAt DateTime     @default(now())
+  members   Membership[]
+  pets      Pet[]
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
-  name  String
-  createdAt DateTime @default(now())
+  id          String       @id @default(cuid())
+  email       String       @unique
+  createdAt   DateTime     @default(now())
+  memberships Membership[]
 }
 
+model Membership {
+  userId    String
+  tenantId  String
+  role      String
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
+  @@id([userId, tenantId])
+}
+
+model Pet {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  species   String
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt])
+}
