@@ -3,8 +3,22 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    },
+    "./hooks/pets-rest": {
+      "types": "./dist/src/hooks/pets-rest.d.ts",
+      "import": "./dist/src/hooks/pets-rest.js"
+    },
+    "./hooks/pets-trpc": {
+      "types": "./dist/src/hooks/pets-trpc.d.ts",
+      "import": "./dist/src/hooks/pets-trpc.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -w -p tsconfig.json",

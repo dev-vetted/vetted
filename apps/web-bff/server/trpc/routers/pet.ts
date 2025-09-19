@@ -35,6 +35,63 @@ export const petRouter = t.router({
       const created = await ctx.prisma.pet.create({ data: { ...input, tenantId } });
       return created;
     }),
+  update: t.procedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+        name: z.string().min(1).optional(),
+        species: z.string().min(1).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...updateData } = input;
+      
+      // Check if pet exists and get current data
+      const existingPet = await ctx.prisma.pet.findUnique({ 
+        where: { id } 
+      });
+      
+      if (!existingPet) {
+        throw new Error('Pet not found');
+      }
+      
+      // Check if user has access to this pet's tenant
+      const tenantId = ctx.auth.tenantId;
+      if (tenantId && existingPet.tenantId !== tenantId) {
+        throw new Error('Access denied: Pet belongs to different tenant');
+      }
+      
+      const updated = await ctx.prisma.pet.update({
+        where: { id },
+        data: updateData,
+      });
+      
+      return updated;
+    }),
+  delete: t.procedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      
+      // Check if pet exists and get current data
+      const existingPet = await ctx.prisma.pet.findUnique({ 
+        where: { id } 
+      });
+      
+      if (!existingPet) {
+        throw new Error('Pet not found');
+      }
+      
+      // Check if user has access to this pet's tenant
+      const tenantId = ctx.auth.tenantId;
+      if (tenantId && existingPet.tenantId !== tenantId) {
+        throw new Error('Access denied: Pet belongs to different tenant');
+      }
+      
+      await ctx.prisma.pet.delete({ where: { id } });
+      
+      return { success: true, id };
+    }),
 });
 
 

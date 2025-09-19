@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Card, CardContent, CardHeader, Input, Modal } from '@vetted/ui';
-import { usePets, useCreatePet, useUpdatePet, useDeletePet } from '@vetted/query/hooks/pets-rest';
+import { trpc } from '../../utils/trpc';
 import { useState } from 'react';
 
 interface Pet {
@@ -12,7 +12,7 @@ interface Pet {
   createdAt: string;
 }
 
-export default function VendorPets() {
+export default function ConsumerPetsPage() {
   const [petName, setPetName] = useState('');
   const [petSpecies, setPetSpecies] = useState('');
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
@@ -21,23 +21,40 @@ export default function VendorPets() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deletingPetId, setDeletingPetId] = useState<string | null>(null);
   
-  const tenantId = 'cmfnrbfso0000bk7wtt4r9bv8';
-  const { data: pets, isLoading, error } = usePets(tenantId);
-  const createPet = useCreatePet(tenantId);
-  const updatePet = useUpdatePet(tenantId);
-  const deletePet = useDeletePet(tenantId);
+  const { data: pets, isLoading, error, refetch } = trpc.pet.list.useQuery({ limit: 20 });
+  const createPet = trpc.pet.create.useMutation({
+    onSuccess: () => {
+      setPetName('');
+      setPetSpecies('');
+      refetch();
+    },
+  });
+  const updatePet = trpc.pet.update.useMutation({
+    onSuccess: () => {
+      setIsEditModalOpen(false);
+      setEditingPet(null);
+      setEditName('');
+      setEditSpecies('');
+      refetch();
+    },
+  });
+  const deletePet = trpc.pet.delete.useMutation({
+    onSuccess: () => {
+      setDeletingPetId(null);
+      refetch();
+    },
+    onError: () => {
+      setDeletingPetId(null);
+    },
+  });
 
   const handleCreatePet = () => {
     if (petName && petSpecies) {
-      createPet.mutate(
-        { name: petName, species: petSpecies },
-        {
-          onSuccess: () => {
-            setPetName('');
-            setPetSpecies('');
-          },
-        }
-      );
+      createPet.mutate({
+        name: petName,
+        species: petSpecies,
+        tenantId: 'cmfnrbfso0000bk7wtt4r9bv8', // Using tenant ID
+      });
     }
   };
 
@@ -50,38 +67,25 @@ export default function VendorPets() {
 
   const handleUpdatePet = () => {
     if (editingPet && editName && editSpecies) {
-      updatePet.mutate(
-        { id: editingPet.id, name: editName, species: editSpecies },
-        {
-          onSuccess: () => {
-            setIsEditModalOpen(false);
-            setEditingPet(null);
-            setEditName('');
-            setEditSpecies('');
-          },
-        }
-      );
+      updatePet.mutate({
+        id: editingPet.id,
+        name: editName,
+        species: editSpecies,
+      });
     }
   };
 
   const handleDeletePet = (petId: string) => {
     setDeletingPetId(petId);
-    deletePet.mutate(petId, {
-      onSuccess: () => {
-        setDeletingPetId(null);
-      },
-      onError: () => {
-        setDeletingPetId(null);
-      },
-    });
+    deletePet.mutate({ id: petId });
   };
 
   return (
     <main className="p-6 space-y-4">
-      <div className="text-xl font-semibold">Vendor Pet Management</div>
+      <div className="text-xl font-semibold">Consumer Pet Management (tRPC)</div>
       
       <Card>
-        <CardHeader>Add New Pet</CardHeader>
+        <CardHeader>Add New Pets via tRPC</CardHeader>
         <CardContent>
           <div className="flex items-center gap-3 mb-4">
             <Input 
@@ -101,19 +105,19 @@ export default function VendorPets() {
               {createPet.isLoading ? 'Adding...' : 'Add Pet'}
             </Button>
           </div>
-          {createPet.error ? (
+          {createPet.error && (
             <div className="text-red-500 text-sm">
-              Error: {(createPet.error as Error).message}
+              Error: {createPet.error.message}
             </div>
-          ) : null}
+          )}
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>Current Pets</CardHeader>
+        <CardHeader>Current Pets (via tRPC)</CardHeader>
         <CardContent>
           {isLoading && <div>Loading pets...</div>}
-          {error && <div className="text-red-500">Error: {(error as Error).message}</div>}
+          {error && <div className="text-red-500">Error: {error.message}</div>}
           {pets && pets.length === 0 && <div>No pets found.</div>}
           {pets && pets.length > 0 && (
             <ul className="space-y-3">
@@ -124,14 +128,14 @@ export default function VendorPets() {
                       <div className="font-semibold text-lg">{pet.name}</div>
                       <div className="text-gray-600">Species: {pet.species}</div>
                       <div className="text-sm text-gray-500">
-                        Added: {new Date(pet.createdAt).toLocaleDateString()}
+                        Tenant: {pet.tenantId} | Added: {new Date(pet.createdAt).toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <Button
                         variant="secondary"
                         onClick={() => handleEditPet(pet)}
-                        disabled={updatePet.isPending}
+                        disabled={updatePet.isLoading}
                       >
                         Edit
                       </Button>
@@ -177,20 +181,18 @@ export default function VendorPets() {
             </Button>
             <Button
               onClick={handleUpdatePet}
-              disabled={!editName || !editSpecies || updatePet.isPending}
+              disabled={!editName || !editSpecies || updatePet.isLoading}
             >
-              {updatePet.isPending ? 'Updating...' : 'Update Pet'}
+              {updatePet.isLoading ? 'Updating...' : 'Update Pet'}
             </Button>
           </div>
-          {updatePet.error ? (
+          {updatePet.error && (
             <div className="text-red-500 text-sm">
-              Error: {(updatePet.error as Error).message || 'An error occurred'}
+              Error: {updatePet.error.message}
             </div>
-          ) : null}
+          )}
         </div>
       </Modal>
     </main>
   );
 }
-
-
