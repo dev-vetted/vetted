@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@trpc/server": "^10.45.2",
+    "@vetted/db": "workspace:*",
+    "@vetted/ui": "workspace:*",
     "next": "^14.2.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

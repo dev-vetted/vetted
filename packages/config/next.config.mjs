@@ -2,9 +2,6 @@
 const baseConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    appDir: true,
-  },
   transpilePackages: [
     '@vetted/ui',
     '@vetted/types',

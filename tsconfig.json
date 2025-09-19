@@ -10,7 +10,8 @@
     { "path": "./packages/ports" },
     { "path": "./packages/adapters" },
     { "path": "./packages/container" },
-    { "path": "./packages/db" }
+    { "path": "./packages/db" },
+    { "path": "./packages/query" }
   ],
   "compilerOptions": {
     "composite": true,

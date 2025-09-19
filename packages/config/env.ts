@@ -23,7 +23,9 @@ const base = {
   SUPABASE_ANON_KEY: z.string().optional(),
 };
 
-const serverSchema = z.object(base).superRefine((env, ctx) => {
+const baseSchema = z.object(base);
+
+const serverSchema = baseSchema.superRefine((env, ctx) => {
   if (env.APP_ENV === 'staging' && env.PAYMENTS_MODE && env.PAYMENTS_MODE !== 'test') {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'staging requires PAYMENTS_MODE=test' });
   }
@@ -34,7 +36,7 @@ const serverSchema = z.object(base).superRefine((env, ctx) => {
 
 export const envServer = serverSchema.parse(process.env);
 
-const clientSchema = serverSchema.pick({
+const clientSchema = baseSchema.pick({
   NEXT_PUBLIC_API_URL: true,
   APP_ENV: true,
 });

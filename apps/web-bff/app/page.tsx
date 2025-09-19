@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, Input, Modal } from '@vetted/ui/src';
+import { Button, Card, CardContent, CardHeader, Input, Modal } from '@vetted/ui';
 
 export default function Page() {
   return (

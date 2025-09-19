@@ -1,4 +1,4 @@
-import { prisma } from '@vetted/db/src';
+import { prisma } from '@vetted/db';
 import { getAuth } from './middleware/auth';
 
 export async function createContext(req: Request) {
