@@ -28,7 +28,8 @@
   "dependencies": {
     "@trpc/client": "^10.45.2",
     "@trpc/react-query": "^10.45.2",
-    "@tanstack/react-query": "^4.29.5"
+    "@tanstack/react-query": "^4.29.5",
+    "@vetted/config": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18"

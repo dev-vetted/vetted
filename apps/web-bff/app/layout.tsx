@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { makeQueryClient } from '@vetted/query';
 import { trpc } from '../utils/trpc';
+import { getApiUrl } from '@vetted/config/env';
 import { useState } from 'react';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: '/api/trpc',
+          url: `${getApiUrl()}/api/trpc`,
         }),
       ],
     })

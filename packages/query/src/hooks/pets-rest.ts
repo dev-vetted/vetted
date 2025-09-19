@@ -1,19 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-const getApiUrl = (path: string) => {
-  const baseUrl = typeof window !== 'undefined' 
-    ? window.location.origin.includes('3001') 
-      ? 'http://localhost:3000'  // Vendor web points to web-bff
-      : ''  // Client web uses relative URLs (same origin)
-    : '';
-  return `${baseUrl}${path}`;
+const getRestApiUrl = (path: string) => {
+  if (typeof window === 'undefined') {
+    // Server-side: use environment variable or fallback
+    return `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${path}`;
+  }
+  
+  // Client-side: determine based on current origin
+  const currentOrigin = window.location.origin;
+  
+  if (currentOrigin.includes('3001')) {
+    // Vendor web app - point to web-bff
+    return `http://localhost:3000${path}`;
+  } else {
+    // Client web app (same origin as backend)
+    return `${path}`;
+  }
 };
 
 export function usePets(tenantId: string) {
   return useQuery({
     queryKey: ['pets', tenantId],
     queryFn: async () => {
-      const res = await fetch(getApiUrl('/api/pets'), { 
+      const res = await fetch(getRestApiUrl('/api/pets'), { 
         headers: { 'x-tenant-id': tenantId } 
       });
       if (!res.ok) throw new Error('Failed to fetch pets');
@@ -27,7 +36,7 @@ export function useCreatePet(tenantId: string) {
   
   return useMutation({
     mutationFn: async (newPet: { name: string; species: string }) => {
-      const res = await fetch(getApiUrl('/api/pets'), {
+      const res = await fetch(getRestApiUrl('/api/pets'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json', 
@@ -49,7 +58,7 @@ export function useUpdatePet(tenantId: string) {
   
   return useMutation({
     mutationFn: async ({ id, ...updateData }: { id: string; name?: string; species?: string }) => {
-      const res = await fetch(getApiUrl(`/api/pets/${id}`), {
+      const res = await fetch(getRestApiUrl(`/api/pets/${id}`), {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json', 
@@ -71,7 +80,7 @@ export function useDeletePet(tenantId: string) {
   
   return useMutation({
     mutationFn: async (petId: string) => {
-      const res = await fetch(getApiUrl(`/api/pets/${petId}`), {
+      const res = await fetch(getRestApiUrl(`/api/pets/${petId}`), {
         method: 'DELETE',
         headers: { 
           'x-tenant-id': tenantId 
@@ -90,7 +99,7 @@ export function usePet(petId: string, tenantId: string) {
   return useQuery({
     queryKey: ['pet', petId, tenantId],
     queryFn: async () => {
-      const res = await fetch(getApiUrl(`/api/pets/${petId}`), { 
+      const res = await fetch(getRestApiUrl(`/api/pets/${petId}`), { 
         headers: { 'x-tenant-id': tenantId } 
       });
       if (!res.ok) throw new Error('Failed to fetch pet');

@@ -10,7 +10,9 @@
     "typecheck": "turbo run typecheck",
     "prisma:generate": "pnpm --filter @vetted/infra-db db:generate && pnpm --filter @vetted/db build",
     "prisma:migrate": "pnpm --filter @vetted/infra-db db:migrate",
-    "db:seed": "pnpm --filter @vetted/infra-db db:seed"
+    "db:seed": "pnpm --filter @vetted/infra-db db:seed",
+    "env:validate": "tsx scripts/validate-env.ts",
+    "env:setup": "cp env.local.example .env.local"
   },
   "devDependencies": {
     "@types/node": "^20.19.14",
@@ -26,6 +28,8 @@
     "prettier": "^3.3.3",
     "prisma": "^5.19.1",
     "tailwindcss": "^3.4.10",
+    "dotenv": "^16.4.5",
+    "tsx": "^4.7.0",
     "turbo": "^2.1.3",
     "typescript": "^5.6.2"
   }

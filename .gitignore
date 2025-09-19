@@ -25,13 +25,7 @@ apps/mobile/android/
 # TypeScript
 *.tsbuildinfo
 
-# Env files (keep examples)
-.env
-.env.*
-!.env.example
-**/.env
-**/.env.*
-!**/.env.example
+
 
 # Logs
 npm-debug.log*

@@ -4,7 +4,7 @@
     "outDir": "dist",
     "types": ["node"]
   },
-  "include": ["env/**/*.ts"],
+  "include": ["env.ts", "env/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
 

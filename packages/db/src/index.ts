@@ -6,7 +6,7 @@ declare global {
 }
 
 export const prisma = globalThis.prisma ?? new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
 });
 
 if (process.env.NODE_ENV !== 'production') {
