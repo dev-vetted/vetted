@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import Constants from 'expo-constants';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Text, View, Button, TextInput, ScrollView, Alert, StyleSheet } from 'react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { makeQueryClient } from '@vetted/query';
@@ -15,6 +14,7 @@ function PetsScreen() {
   const [petSpecies, setPetSpecies] = useState('');
   const { data: pets, isLoading, error } = usePets('1');
   const createPet = useCreatePet('1');
+  
 
   const handleCreatePet = () => {
     if (petName && petSpecies) {
