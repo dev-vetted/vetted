@@ -2,6 +2,16 @@
 const baseConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  experimental: {
+    // Ensure Prisma client and engines are included in serverless output
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
+    outputFileTracingIncludes: {
+      '/*': [
+        './node_modules/@prisma/client',
+        './node_modules/.prisma'
+      ],
+    },
+  },
   transpilePackages: [
     '@vetted/ui',
     '@vetted/types',
