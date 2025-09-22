@@ -12,7 +12,11 @@
     "prisma:migrate": "pnpm --filter @vetted/infra-db db:migrate",
     "db:seed": "pnpm --filter @vetted/infra-db db:seed",
     "env:validate": "tsx scripts/validate-env.ts",
-    "env:setup": "cp env.local.example .env.local"
+    "env:setup": "cp env.local.example .env.local",
+    "clean:turbo": "pnpm dlx rimraf .turbo \"**/.turbo\"",
+    "clean:modules": "pnpm dlx rimraf node_modules \"**/node_modules\" && pnpm store prune",
+    "clean:outputs": "pnpm dlx rimraf \"**/.next\" \"**/dist\" \"**/build\" \"**/.cache\"",
+    "rebuild:fresh": "pnpm run clean:turbo && pnpm run clean:modules && pnpm run clean:outputs && pnpm install && pnpm turbo run build"
   },
   "devDependencies": {
     "@types/node": "^20.19.14",
