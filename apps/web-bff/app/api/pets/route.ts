@@ -3,7 +3,7 @@ import { createContext } from '../../../server/context';
 
 // CORS headers for cross-origin requests
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'http://localhost:3001, https://vetted-vendor-web.vercel.app',
+  'Access-Control-Allow-Origin': 'http://localhost:3001, https://vetted-web-bff.vercel.app',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, x-tenant-id',
 };
