@@ -9,6 +9,11 @@ const getRestApiUrl = (path: string) => {
   // Client-side: determine based on current origin
   const currentOrigin = window.location.origin;
   
+  // Vendor web deployed domain → route to hosted web-bff
+  if (currentOrigin.includes('vetted-vendor-web')) {
+    return `https://vetted-web-bff.vercel.app${path}`;
+  }
+
   if (currentOrigin.includes('3001')) {
     // Vendor web app - point to web-bff
     return `http://localhost:3000${path}`;
