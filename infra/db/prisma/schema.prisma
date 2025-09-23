@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres.lctnuaejhzgsdidtynmc:wRUAyvaKrKKk3Tpd@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?connection_limit=1&sslmode=require&sslaccept=strict&connect_timeout=500"
+  url      = "postgresql://postgres.lctnuaejhzgsdidtynmc:wRUAyvaKrKKk3Tpd@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?connection_limit=1&sslmode=require&connect_timeout=500"
 }
 
 model Tenant {
